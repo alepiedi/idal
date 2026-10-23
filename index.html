@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IDAL · Italiana Distribuzione Alimenti · Benevento</title>
+<meta name="description" content="I.D.AL srl, Italiana Distribuzione Alimenti, Benevento: selezione e distribuzione di prodotti alimentari Made in Italy a marchio IDAL. Caseari, salumi, pasta, prodotti da forno, ortofrutta, conserve e legumi, ittico.">
+<meta name="theme-color" content="#FBF6EC">
+<meta property="og:title" content="IDAL · food, our family passion">
+<meta property="og:description" content="Italiana Distribuzione Alimenti. Dal latte di Durazzano agli oltre 2.700 punti vendita di oggi.">
+<meta property="og:image" content="assets/img/hero-caseari.webp">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@500;700&family=Manrope:wght@400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="is-loading">
+<noscript><style>.loader{display:none}body.is-loading .hw b,body.is-loading .hw em,body.is-loading .hero__text>*,body.is-loading .float,body.is-loading .plate,body.is-loading .stamp{animation-play-state:running}</style></noscript>
+
+<!-- ============ PRELOADER: la bilancia ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__scale">
+    <div class="loader__brand"><img src="assets/img/logo-idal.png" alt=""></div>
+    <div class="loader__display">
+      <span class="loader__num" id="loaderNum">0</span><span class="loader__unit">kg</span>
+    </div>
+    <div class="loader__caption">movimentati ogni anno, con passione</div>
+  </div>
+  <div class="loader__curtain"><i></i><i></i><i></i></div>
+</div>
+
+<a class="skip" href="#main">Vai al contenuto</a>
+<div class="progress" aria-hidden="true"><i id="progress"></i></div>
+<div class="cursor" id="cursor" aria-hidden="true"><span></span></div>
+
+<!-- ============ HEADER ============ -->
+<header class="nav" id="nav">
+  <a class="nav__logo" href="#home" aria-label="IDAL, torna all'inizio" id="logoBtn">
+    <img src="assets/img/logo-idal.png" alt="IDAL · food, our family passion" width="720" height="335">
+  </a>
+  <nav class="nav__menu" aria-label="Principale">
+    <a href="#home" data-nav="home">Home</a>
+    <div class="nav__item">
+      <a href="#chi-siamo" data-nav="chi-siamo">Chi siamo</a>
+      <div class="nav__drop">
+        <a href="#storia">La nostra storia</a>
+        <a href="#filosofia">La nostra filosofia</a>
+      </div>
+    </div>
+    <div class="nav__item">
+      <a href="#prodotti" data-nav="prodotti">Prodotti</a>
+      <div class="nav__drop nav__drop--cats" id="navCats"></div>
+    </div>
+    <a href="#certificazioni" data-nav="certificazioni">Certificazioni</a>
+    <a href="#contatti" data-nav="contatti">Contatti</a>
+  </nav>
+  <a class="nav__phone" href="tel:800010188" aria-label="Numero verde 800 01 01 88">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+    <span><small>Numero verde</small>800 01 01 88</span>
+  </a>
+  <button class="nav__burger" id="burger" aria-label="Apri il menu" aria-expanded="false" aria-controls="mobileMenu"><i></i><i></i></button>
+</header>
+
+<div class="mmenu" id="mobileMenu" hidden>
+  <nav aria-label="Menu mobile">
+    <a href="#home">Home</a>
+    <a href="#storia">La nostra storia</a>
+    <a href="#filosofia">La nostra filosofia</a>
+    <a href="#prodotti">Prodotti</a>
+    <a href="#certificazioni">Certificazioni</a>
+    <a href="#contatti">Contatti</a>
+  </nav>
+  <div class="mmenu__cats" id="mmenuCats"></div>
+  <a class="mmenu__phone" href="tel:800010188">Numero verde · 800 01 01 88</a>
+</div>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home" data-section="home">
+  <div class="hero__bg" aria-hidden="true">
+    <svg class="hero__swoosh" viewBox="0 0 600 600"><path d="M210 120 C300 -40 520 -20 560 90 C600 210 520 420 430 560 C400 380 320 220 210 120Z"/></svg>
+    <svg class="hero__tri" viewBox="0 0 600 600"><path d="M40 560 L250 140 L400 560Z"/></svg>
+  </div>
+
+  <div class="hero__inner">
+    <div class="hero__text">
+      <p class="eyebrow hero__eyebrow"><span class="dot dot--g"></span>Benevento · dal 1950 · food, our family passion</p>
+      <h1 class="hero__title" aria-label="Italiana Distribuzione Alimenti">
+        <span class="hw" style="--d:0"><b class="i">I</b><em>taliana</em></span>
+        <span class="hw" style="--d:1"><b class="d">D</b><em>istribuzione</em></span>
+        <span class="hw" style="--d:2"><b class="al">Al</b><em>imenti</em></span>
+      </h1>
+      <p class="hero__lead">Selezioniamo e distribuiamo prodotti alimentari <strong>Made in Italy</strong> di qualità. Otto comparti, oltre <strong>2.700 punti vendita</strong>, un solo marchio di famiglia.</p>
+      <div class="hero__cta">
+        <a class="btn btn--ink magnetic" href="#prodotti"><span>Scopri i prodotti</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--ghost magnetic" href="#storia"><span>La nostra storia</span></a>
+      </div>
+    </div>
+
+    <div class="hero__stage" id="heroStage" aria-hidden="true">
+      <figure class="plate plate--a" data-depth="0.6"><img src="assets/img/hero-caseari.webp" alt=""></figure>
+      <figure class="plate plate--b" data-depth="1"><img src="assets/img/hero-salumi.webp" alt=""></figure>
+      <div class="float f1" data-depth="1.8"><img src="assets/img/prodotti/IDA0315.webp" alt=""></div>
+      <div class="float f2" data-depth="2.4"><img src="assets/img/prodotti/IDA0626.webp" alt=""></div>
+      <div class="float f3" data-depth="1.4"><img src="assets/img/prodotti/IDA0285.webp" alt=""></div>
+      <div class="float f4" data-depth="2.1"><img src="assets/img/prodotti/IDA0570.webp" alt=""></div>
+      <div class="float f5" data-depth="1.2"><img src="assets/img/prodotti/IDA0982.webp" alt=""></div>
+      <div class="stamp" data-depth="2.8">
+        <svg viewBox="0 0 200 200"><defs><path id="stampPath" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs><text><textPath href="#stampPath" textLength="462" lengthAdjust="spacing">MADE IN ITALY · SELEZIONATO DA IDAL · BENEVENTO · </textPath></text></svg>
+        <span>100%<small>italiano</small></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__scroll" aria-hidden="true"><span>Scorri</span><i></i></div>
+</section>
+
+<!-- Le 8 tessere dei comparti (dal layout) -->
+<section class="keys" aria-label="I comparti IDAL">
+  <div class="keys__row" id="keys"></div>
+</section>
+
+<!-- Il nastro trasportatore -->
+<section class="belt" aria-label="Alcuni prodotti a marchio IDAL">
+  <div class="belt__track" id="belt1"></div>
+  <div class="belt__track belt__track--rev" id="belt2"></div>
+</section>
+
+<!-- ============ CARTA D'IDENTITÀ (slide 2) ============ -->
+<section class="ident wrap" aria-labelledby="identTitle">
+  <h2 class="sr-only" id="identTitle">IDAL in breve</h2>
+  <article class="icard reveal">
+    <p class="eyebrow">Il Marchio</p>
+    <img class="icard__logo" src="assets/img/logo-idal.png" alt="Marchio IDAL" loading="lazy">
+    <p>Azienda specializzata nella selezione e distribuzione di prodotti alimentari a marchio.</p>
+  </article>
+  <article class="icard icard--map reveal">
+    <p class="eyebrow">Stabilimento</p>
+    <div class="minimap" id="minimap" role="img" aria-label="Lo stabilimento IDAL a Benevento, in Campania"></div>
+    <p>Via Antonio Abete, 40 · Benevento</p>
+  </article>
+  <article class="icard reveal">
+    <p class="eyebrow">Idal Srl</p>
+    <address>
+      Via Antonio Abete, 40 –<br>82100 Benevento (Italy)<br>P.Iva 00682990627<br>
+      <a href="mailto:idalsrl@idal-srl.it">idalsrl@idal-srl.it</a>
+    </address>
+    <a class="nverde" href="tel:800010188"><img src="assets/img/numero-verde.png" alt="Numero verde 800 01 01 88, Servizio Consumatori" loading="lazy"></a>
+  </article>
+</section>
+
+<!-- ============ CHI SIAMO · LA NOSTRA STORIA ============ -->
+<section class="story" id="chi-siamo" data-section="chi-siamo">
+  <div class="wrap story__head" id="storia">
+    <p class="eyebrow">Chi siamo · La nostra storia</p>
+    <h2 class="display reveal">Da un bidone di latte a <em>Durazzano</em> a 2.700 punti vendita.</h2>
+    <p class="story__intro reveal">I.D.AL srl è un’azienda specializzata nella selezione e distribuzione di prodotti alimentari Made in Italy di qualità.</p>
+  </div>
+
+  <div class="story__body wrap">
+    <div class="story__steps">
+      <article class="step" data-step="0">
+        <span class="step__year">Anni ’50</span>
+        <h3>Tutto comincia con il latte</h3>
+        <p>L’attività dell’azienda nasce dall’intraprendenza imprenditoriale di <strong>Vincenzo Abbatiello</strong> quando, agli inizi degli anni ’50 a Durazzano, in provincia di Benevento, avvia la raccolta del latte e la successiva distribuzione e vendita.</p>
+      </article>
+      <article class="step" data-step="1">
+        <span class="step__year">Poi</span>
+        <h3>La famiglia allarga la gamma</h3>
+        <p>Grazie al supporto della sua famiglia, Vincenzo Abbatiello decide successivamente di ampliare la gamma dei prodotti selezionati e distribuiti nel settore lattiero-caseario, instaurando <strong>rapporti commerciali diretti con i siti produttivi in tutta Italia</strong>.</p>
+      </article>
+      <article class="step" data-step="2">
+        <span class="step__year">1988</span>
+        <h3>Nasce il marchio IDAL</h3>
+        <p>La passione per il cibo, la conoscenza degli stabilimenti di produzione e la competenza maturata nella selezione dei vari prodotti spingono l’azienda I.D.AL a creare, nel 1988, un proprio marchio. Originariamente i prodotti a marchio IDAL comprendono solo una <strong>linea di formaggi D.O.P.</strong></p>
+      </article>
+      <article class="step" data-step="3">
+        <span class="step__year">Con gli anni</span>
+        <h3>Otto comparti agroalimentari</h3>
+        <p>Con gli anni l’azienda decide di ampliarne la gamma e attualmente è presente in 8 comparti agroalimentari (caseario, salumi, ortofrutta, pasta, conserve, legumi, prodotti da forno, ittico) e movimenta circa <strong>1.700.000 kg</strong> di prodotti l’anno, grazie all’impegno quotidiano di <strong>200 collaboratori</strong>.</p>
+      </article>
+      <article class="step" data-step="4">
+        <span class="step__year">Oggi</span>
+        <h3>Sulle tavole di quattro regioni</h3>
+        <p>Oggi i prodotti a marchio IDAL sono presenti in <strong>oltre 2.700 punti vendita</strong>, dislocati nelle quattro regioni in cui l’azienda opera principalmente: Campania, Molise, Puglia e Basilicata.</p>
+      </article>
+    </div>
+    <div class="story__stage">
+      <div class="mapbox" id="mapbox">
+        <svg id="storyMap" class="smap" role="img" aria-label="Mappa d’Italia: da Durazzano alle quattro regioni servite da IDAL"></svg>
+        <div class="mapbox__badge" id="mapBadge"></div>
+        <p class="mapbox__note">Punti sulla mappa: distribuzione illustrativa</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- I numeri -->
+<section class="numbers" aria-label="IDAL in numeri">
+  <div class="wrap numbers__grid">
+    <div class="num"><b data-count="1700000" data-sep>0</b><span>kg di prodotti movimentati ogni anno</span></div>
+    <div class="num"><b data-count="2700" data-sep data-plus>0</b><span>punti vendita con prodotti IDAL</span></div>
+    <div class="num"><b data-count="200">0</b><span>collaboratori, ogni giorno</span></div>
+    <div class="num"><b data-count="8">0</b><span>comparti agroalimentari</span></div>
+    <div class="num"><b data-count="4">0</b><span>regioni: Campania, Molise, Puglia, Basilicata</span></div>
+    <div class="num"><b data-count="1988">0</b><span>l’anno del marchio IDAL</span></div>
+  </div>
+  <div class="wrap live" aria-live="off">
+    <div class="live__dot"></div>
+    <p>Da quando sei su questa pagina IDAL ha movimentato in media <b id="liveKg">0,00 kg</b> di prodotti. <span id="liveCmp">Più o meno il peso di una piuma.</span></p>
+  </div>
+</section>
+
+<!-- ============ LA NOSTRA FILOSOFIA ============ -->
+<section class="philo" id="filosofia">
+  <div class="wrap">
+    <p class="eyebrow">Chi siamo · La nostra filosofia</p>
+    <p class="philo__big" id="philoBig">Abbiamo a cuore le esigenze del consumatore e per questo selezioniamo, per i prodotti a marchio IDAL, esclusivamente fornitori che seguono regole semplici ma rigorose: attenzione per la qualità, scrupolosità nella scelta delle materie prime, conformità a standard igienici al fine di garantire sapori italiani autentici e genuini.</p>
+
+    <div class="pillars">
+      <div class="pillar reveal"><span>01</span><h3>Attenzione per la qualità</h3></div>
+      <div class="pillar reveal"><span>02</span><h3>Scrupolosità nella scelta delle materie prime</h3></div>
+      <div class="pillar reveal"><span>03</span><h3>Conformità a standard igienici</h3></div>
+    </div>
+
+    <div class="chain reveal" aria-label="Produttore, IDAL, consumatore">
+      <div class="chain__node"><span class="chain__ico chain__ico--g"><img src="assets/img/icone/ortofrutta.png" alt=""></span>Produttore</div>
+      <div class="chain__link"><i></i></div>
+      <div class="chain__node chain__node--idal"><img src="assets/img/logo-idal.png" alt="IDAL" loading="lazy"></div>
+      <div class="chain__link"><i></i></div>
+      <div class="chain__node"><span class="chain__ico chain__ico--r"><svg viewBox="0 0 24 24"><path d="M7 2v9a2 2 0 0 0 2 2v9M5 2v6a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M9 2v8M18 22V2c-2.5 1.5-3.5 4-3.5 8 0 2 1.2 3 3.5 3"/></svg></span>Consumatore</div>
+    </div>
+    <p class="philo__quote reveal">IDAL crea un legame imprescindibile con il produttore e il consumatore: <em>chi acquista un nostro prodotto, acquista innanzitutto i valori delle persone che ne fanno parte.</em></p>
+    <p class="philo__future reveal">Il nostro obiettivo per il futuro è continuare a seguire la nostra passione per il cibo e ampliare sempre più la gamma dei prodotti a marchio IDAL da offrire al consumatore <strong>in Italia e nel mondo</strong>.</p>
+  </div>
+</section>
+
+<!-- ============ PRODOTTI · LE LINEE ============ -->
+<section class="lines" id="prodotti" data-section="prodotti">
+  <div class="wrap lines__head">
+    <p class="eyebrow">Prodotti</p>
+    <h2 class="display reveal">Sette linee, <em>una sola</em> passione.</h2>
+    <p class="lines__hint">Scorri: ogni linea ha il suo colore, come sugli scaffali.</p>
+  </div>
+  <div class="lines__pin" id="linesPin">
+    <div class="lines__sticky">
+      <div class="lines__track" id="linesTrack"></div>
+      <div class="lines__dots" id="linesDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATALOGO ============ -->
+<section class="cat" id="catalogo" aria-labelledby="catTitle">
+  <div class="wrap">
+    <div class="cat__head">
+      <div>
+        <p class="eyebrow">Catalogo referenze 2026</p>
+        <h2 class="display" id="catTitle">Tutte le referenze <em>a marchio IDAL</em></h2>
+      </div>
+      <p class="cat__count"><b id="catCount">0</b> referenze</p>
+    </div>
+
+    <div class="cat__bar" id="catBar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" id="catSearch" placeholder="Cerca per nome o codice: “Parmigiano”, “Trecciolo”, “IDA0285”…" aria-label="Cerca nel catalogo">
+      </label>
+      <div class="chips" id="catChips" role="tablist" aria-label="Filtra per linea"></div>
+      <div class="chips chips--sub" id="subChips" aria-label="Filtra per tipologia"></div>
+    </div>
+
+    <div class="grid" id="catGrid"></div>
+    <div class="more" id="catMore" hidden><button class="btn btn--ghost" id="catMoreBtn" type="button"><span>Mostra altre</span></button></div>
+    <div class="empty" id="catEmpty" hidden>
+      <p>Nessuna referenza trovata.</p>
+      <button class="btn btn--ghost" id="catReset" type="button">Azzera i filtri</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CERTIFICAZIONI ============ -->
+<section class="cert" id="certificazioni" data-section="certificazioni">
+  <div class="wrap cert__grid">
+    <div class="cert__seal" aria-hidden="true">
+      <svg viewBox="0 0 400 400" id="seal">
+        <defs>
+          <path id="sealPath" d="M200,200 m-150,0 a150,150 0 1,1 300,0 a150,150 0 1,1 -300,0"/>
+          <radialGradient id="sealGrad" cx="35%" cy="30%"><stop offset="0" stop-color="#2bb5f0"/><stop offset="1" stop-color="#006fa3"/></radialGradient>
+        </defs>
+        <g class="seal__spin">
+          <circle cx="200" cy="200" r="186" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 8"/>
+          <text class="seal__ring"><textPath href="#sealPath" textLength="938" lengthAdjust="spacing">SISTEMA DI GESTIONE PER LA QUALITÀ · ISO 9001:2015 · I.D.AL SRL · BENEVENTO · </textPath></text>
+        </g>
+        <circle cx="200" cy="200" r="118" fill="url(#sealGrad)"/>
+        <circle cx="200" cy="200" r="104" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/>
+        <text x="200" y="182" text-anchor="middle" class="seal__iso">ISO</text>
+        <text x="200" y="238" text-anchor="middle" class="seal__num">9001</text>
+        <text x="200" y="268" text-anchor="middle" class="seal__year">: 2015</text>
+      </svg>
+    </div>
+    <div class="cert__text">
+      <p class="eyebrow">Certificazioni</p>
+      <h2 class="display reveal">La qualità, <em>certificata</em>.</h2>
+      <p class="reveal">Per noi di I.D.AL. la qualità è molto importante. Per questo motivo, oltre a selezionare fornitori che rispettino rigorosamente standard qualitativi elevati, siamo noi stessi certificati <strong>ISO 9001:2015</strong> con l’obiettivo prioritario di soddisfare i nostri clienti e migliorare l’efficienza e l’efficacia dei nostri processi aziendali.</p>
+      <p class="reveal">L'ISO 9001:2015 è infatti la normativa di riferimento per le imprese che vogliono ciclicamente sottoporre ad un controllo di qualità le attività aziendali.</p>
+      <div class="cert__years reveal"><b>15+</b><span>Da oltre 15 anni siamo certificati per la distribuzione di prodotti alimentari, porzionatura e confezionamento di formaggi e salumi a nostro marchio.</span></div>
+    </div>
+  </div>
+  <ol class="wrap process">
+    <li class="reveal"><i>01</i><h3>Selezione</h3><p>Solo fornitori con standard qualitativi elevati.</p></li>
+    <li class="reveal"><i>02</i><h3>Porzionatura</h3><p>Formaggi e salumi a marchio IDAL.</p></li>
+    <li class="reveal"><i>03</i><h3>Confezionamento</h3><p>Sotto sistema qualità certificato.</p></li>
+    <li class="reveal"><i>04</i><h3>Distribuzione</h3><p>Verso oltre 2.700 punti vendita.</p></li>
+  </ol>
+</section>
+
+<!-- ============ CONTATTI ============ -->
+<section class="contact" id="contatti" data-section="contatti">
+  <div class="wrap contact__grid">
+    <div>
+      <p class="eyebrow">Contatti</p>
+      <h2 class="display reveal">La tua opinione <em>conta!</em></h2>
+      <p class="reveal">Per qualsiasi informazione, suggerimento o domanda scrivici a <a href="mailto:idalsrl@idal-srl.it">idalsrl@idal-srl.it</a> oppure chiama il nostro numero verde:</p>
+      <a class="bigphone magnetic" href="tel:800010188">
+        <small>Numero verde · Servizio Consumatori</small>
+        <span>800&nbsp;01&nbsp;01&nbsp;88</span>
+      </a>
+      <dl class="contact__data">
+        <div><dt>Sede e stabilimento</dt><dd>Via Antonio Abete, 40<br>82100 Benevento (Italy)</dd></div>
+        <div><dt>Partita IVA</dt><dd>00682990627</dd></div>
+        <div><dt>Email</dt><dd><a href="mailto:idalsrl@idal-srl.it">idalsrl@idal-srl.it</a></dd></div>
+      </dl>
+    </div>
+    <form class="form reveal" id="contactForm" novalidate>
+      <fieldset class="form__who">
+        <legend>Chi sei?</legend>
+        <label><input type="radio" name="chi" value="Consumatore" checked><span>Consumatore</span></label>
+        <label><input type="radio" name="chi" value="Punto vendita"><span>Punto vendita</span></label>
+        <label><input type="radio" name="chi" value="Fornitore"><span>Fornitore</span></label>
+      </fieldset>
+      <label class="field"><input name="nome" required placeholder=" " autocomplete="name"><span>Nome e cognome</span></label>
+      <label class="field"><input name="email" type="email" required placeholder=" " autocomplete="email"><span>Email</span></label>
+      <label class="field"><textarea name="msg" rows="4" required placeholder=" "></textarea><span>Il tuo messaggio</span></label>
+      <button class="btn btn--ink magnetic" type="submit"><span>Invia messaggio</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <p class="form__note">Il messaggio si apre nel tuo programma di posta, già compilato.</p>
+    </form>
+  </div>
+  <div class="wrap">
+    <div class="gmap" id="gmap">
+      <button type="button" class="gmap__load" id="gmapLoad">
+        <span>Via Antonio Abete, 40 · Benevento</span>
+        <b>Mostra la mappa</b>
+      </button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="foot__marquee" aria-hidden="true"><div><span>Italiana Distribuzione Alimenti ·</span><span>Italiana Distribuzione Alimenti ·</span><span>Italiana Distribuzione Alimenti ·</span><span>Italiana Distribuzione Alimenti ·</span></div></div>
+  <div class="wrap foot__grid">
+    <div>
+      <img class="foot__logo" src="assets/img/logo-idal.png" alt="IDAL" loading="lazy">
+      <p>I.D.AL srl · Italiana Distribuzione Alimenti<br>Via Antonio Abete, 40 – 82100 Benevento (Italy)<br>P.Iva 00682990627</p>
+    </div>
+    <nav aria-label="Footer">
+      <a href="#home">Home</a><a href="#storia">La nostra storia</a><a href="#filosofia">La nostra filosofia</a><a href="#prodotti">Prodotti</a><a href="#catalogo">Catalogo</a><a href="#certificazioni">Certificazioni</a><a href="#contatti">Contatti</a>
+    </nav>
+    <div>
+      <a class="foot__phone" href="tel:800010188">800 01 01 88</a>
+      <a href="mailto:idalsrl@idal-srl.it">idalsrl@idal-srl.it</a>
+      <button class="dontpress" id="dontPress" type="button">Non premere questo pulsante</button>
+    </div>
+  </div>
+  <div class="wrap foot__legal">
+    <span>© <span id="year">2026</span> I.D.AL srl · Tutti i diritti riservati</span>
+    <span class="tricolore" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span>food, our family passion</span>
+  </div>
+</footer>
+
+<!-- Lista referenze -->
+<button class="listfab" id="listFab" type="button" aria-controls="listDrawer" aria-expanded="false">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+  <span>La mia lista</span><b id="listCount">0</b>
+</button>
+<aside class="drawer" id="listDrawer" aria-label="La mia lista referenze" hidden>
+  <div class="drawer__head">
+    <h2>La mia lista</h2>
+    <button type="button" class="x" id="listClose" aria-label="Chiudi la lista">×</button>
+  </div>
+  <p class="drawer__sub">Sei un punto vendita? Raccogli le referenze che ti interessano e chiedi informazioni in un clic.</p>
+  <ul class="drawer__list" id="listItems"></ul>
+  <div class="drawer__actions">
+    <a class="btn btn--ink" id="listMail" href="#"><span>Richiedi informazioni</span></a>
+    <button class="btn btn--ghost" id="listCopy" type="button"><span>Copia elenco</span></button>
+    <button class="linkbtn" id="listClear" type="button">Svuota la lista</button>
+  </div>
+</aside>
+
+<!-- Scheda prodotto -->
+<dialog class="modal" id="modal" aria-labelledby="mName">
+  <div class="modal__card">
+    <button class="x" id="mClose" type="button" aria-label="Chiudi">×</button>
+    <figure class="modal__img"><img id="mImg" alt=""></figure>
+    <div class="modal__info">
+      <p class="modal__line" id="mLine"></p>
+      <p class="code" id="mCode"></p>
+      <h3 id="mName"></h3>
+      <dl id="mData"></dl>
+      <p class="modal__brand"><img src="assets/img/logo-idal.png" alt="" width="72"> Prodotto a marchio IDAL</p>
+      <div class="modal__act">
+        <button class="btn btn--ink" id="mAdd" type="button"><span>Aggiungi alla lista</span></button>
+      </div>
+      <div class="modal__nav">
+        <button type="button" id="mPrev" aria-label="Referenza precedente">←</button>
+        <button type="button" id="mNext" aria-label="Referenza successiva">→</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<canvas class="rain" id="rain" aria-hidden="true"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/prodotti.js"></script>
+<script src="assets/js/mappa.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
