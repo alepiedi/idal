@@ -349,7 +349,9 @@ function storyMap() {
   // l'orbita dei comparti gira solo nello step 3 e solo se la mappa è sullo schermo
   const syncAnim = pauseOffscreen(svg, box, () => step === 3);
   apply(); go(0);
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) go(+e.target.dataset.step); }), { rootMargin: '-45% 0px -45% 0px' });
+  // su telefono la mappa occupa la parte alta dello schermo: il testo "attivo" è quello che si legge sotto
+  const band = matchMedia('(max-width: 900px)').matches ? '-66% 0px -30% 0px' : '-45% 0px -45% 0px';
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) go(+e.target.dataset.step); }), { rootMargin: band });
   $$('.step').forEach(s => io.observe(s));
 }
 
