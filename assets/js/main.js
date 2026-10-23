@@ -12,13 +12,23 @@ const FINE = matchMedia('(pointer: fine)').matches;
 const fmt = (n, d = 0) => n.toLocaleString('it-IT', { minimumFractionDigits: d, maximumFractionDigits: d });
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const img = c => `assets/img/prodotti/${c}.webp`;
+const imgS = c => `assets/img/prodotti/s/${c}.webp`;
 const ico = k => `assets/img/icone/${k}.png`;
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const store = {
-  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 };
 
-const PRODOTTI = window.IDAL_PRODOTTI || [];
+/* Un solo gestore di scroll per tutto il sito, al massimo una volta per fotogramma */
+const onScroll = (() => {
+  const fns = []; let queued = false;
+  const run = () => { queued = false; for (const f of fns) { try { f(scrollY); } catch (e) { console.error(e); } } };
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(run); } }, { passive: true });
+  return f => { fns.push(f); f(scrollY); };
+})();
+
+const PRODOTTI = Array.isArray(window.IDAL_PRODOTTI) ? window.IDAL_PRODOTTI : [];
 const BY_CODE = Object.fromEntries(PRODOTTI.map(p => [p.c, p]));
 
 /* ---------- Le linee (testi dal layout) ---------- */
@@ -72,7 +82,8 @@ function loader() {
   };
   let seen = false;
   try { seen = sessionStorage.getItem('idal-loader') === '1'; sessionStorage.setItem('idal-loader', '1'); } catch {}
-  if (RM || seen) { el.classList.add('is-gone'); document.body.classList.remove('is-loading'); return; }
+  if (RM || seen) { el.classList.add('is-gone'); return; }
+  document.body.classList.add('is-loading');
   const num = $('#loaderNum'), T = 1500, t0 = performance.now(), END = 1700000;
   (function tick(t) {
     const p = clamp((t - t0) / T, 0, 1), e = 1 - Math.pow(1 - p, 4);
@@ -87,18 +98,17 @@ function loader() {
 function nav() {
   const navEl = $('#nav'), burger = $('#burger'), mm = $('#mobileMenu');
   $('#navCats').innerHTML = LINEE.map(l =>
-    `<a href="#catalogo" data-cat="${l.k}"><i style="background:${l.c}"><img src="${ico(l.ico)}" alt=""></i>${l.nome}</a>`).join('');
+    `<a href="#catalogo" data-cat="${l.k}"><i class="k-${l.k}"><img src="${ico(l.ico)}" alt="" width="20" height="20"></i>${esc(l.nome)}</a>`).join('');
   $('#mmenuCats').innerHTML = LINEE.map(l =>
-    `<a href="#catalogo" data-cat="${l.k}" style="background:${l.c}" aria-label="${l.nome}"><img src="${ico(l.ico)}" alt=""></a>`).join('');
+    `<a href="#catalogo" data-cat="${l.k}" class="k-${l.k}" aria-label="${esc(l.nome)}"><img src="${ico(l.ico)}" alt="" loading="lazy"></a>`).join('');
 
   let lastY = scrollY;
-  addEventListener('scroll', () => {
-    const y = scrollY;
+  onScroll(y => {
     navEl.classList.toggle('is-scrolled', y > 30);
-    navEl.classList.toggle('is-hidden', y > 600 && y > lastY + 4 && !mm.classList.contains('is-open'));
-    if (y < lastY - 4) navEl.classList.remove('is-hidden');
+    if (y > 600 && y > lastY + 4 && !mm.classList.contains('is-open')) navEl.classList.add('is-hidden');
+    else if (y < lastY - 4 || y <= 600) navEl.classList.remove('is-hidden');
     lastY = y;
-  }, { passive: true });
+  });
 
   const toggle = open => {
     burger.setAttribute('aria-expanded', open);
@@ -133,13 +143,14 @@ function hero() {
       el.style.transform = `translate3d(${cx * d * 14}px, ${cy * d * 14 - sy * d * .12}px, 0)`;
     });
     raf = Math.abs(mx - cx) + Math.abs(my - cy) > .001 ? requestAnimationFrame(loop) : 0;
+    if (!raf) items.forEach(el => { el.style.transform = `translate3d(${mx * +el.dataset.depth * 14}px, ${my * +el.dataset.depth * 14 - sy * +el.dataset.depth * .12}px, 0)`; });
   };
   const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
   if (FINE) addEventListener('pointermove', e => {
     if (scrollY > innerHeight) return;
     mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; kick();
   }, { passive: true });
-  addEventListener('scroll', () => { if (scrollY < innerHeight * 1.2) { sy = scrollY; kick(); } }, { passive: true });
+  onScroll(y => { if (y < innerHeight * 1.2 || sy < innerHeight * 1.2) { sy = Math.min(y, innerHeight * 1.2); kick(); } });
 }
 
 /* =========================================================
@@ -148,9 +159,9 @@ function hero() {
 function keys() {
   $('#keys').innerHTML = TESSERE.map(t => {
     const n = t.sub ? PRODOTTI.filter(p => p.k === t.k && p.s === t.sub).length : count(t.k);
-    return `<a class="key key--${t.ico}" href="#catalogo" data-cat="${t.k}" ${t.sub ? `data-sub="${t.sub}"` : ''} style="--c:${t.c}">
-      <img src="${ico(t.ico)}" alt="">
-      <span>${t.nome}<small>${n} referenze</small></span></a>`;
+    return `<a class="key key--${t.ico} k-${t.ico}" href="#catalogo" data-cat="${t.k}" ${t.sub ? `data-sub="${esc(t.sub)}"` : ''}>
+      <img src="${ico(t.ico)}" alt="" width="120" height="120">
+      <span>${esc(t.nome)}<small>${n} referenze</small></span></a>`;
   }).join('');
 }
 
@@ -158,26 +169,35 @@ function belt() {
   const pool = PRODOTTI.filter(p => !p.x);
   const pick = (off, n) => Array.from({ length: n }, (_, i) => pool[(off + i * 13) % pool.length]);
   const fill = (el, list) => {
-    const html = list.map(p => `<a class="belt__item" href="#catalogo" data-open="${p.c}" data-code="${p.c}" data-cursor="Apri" aria-label="${p.n}"><img src="${img(p.c)}" alt="" loading="lazy"></a>`).join('');
+    const html = list.map(p => `<a class="belt__item" href="#catalogo" data-open="${esc(p.c)}" data-code="${esc(p.c)}" data-cursor="Apri" aria-label="${esc(p.n)}"><img src="${imgS(p.c)}" alt="" width="280" height="280" loading="lazy" decoding="async"></a>`).join('');
     el.innerHTML = html + html;
   };
   const t1 = $('#belt1'), t2 = $('#belt2');
   fill(t1, pick(0, 22)); fill(t2, pick(7, 22));
   if (RM) return;
-  let x1 = 0, x2 = 0, v = 0, lastY = scrollY, vis = true;
-  new IntersectionObserver(([e]) => { vis = e.isIntersecting; }).observe($('.belt'));
-  addEventListener('scroll', () => { v += (scrollY - lastY) * .08; lastY = scrollY; }, { passive: true });
-  (function loop() {
-    if (vis) {
-      v *= .92;
-      const s = .5 + Math.abs(v);
-      const w1 = t1.scrollWidth / 2, w2 = t2.scrollWidth / 2;
-      x1 = (x1 - s) % w1; x2 = (x2 + s) % w2;
-      t1.style.transform = `translate3d(${x1}px,0,0)`;
-      t2.style.transform = `translate3d(${x2 - w2}px,0,0)`;
-    }
-    requestAnimationFrame(loop);
-  })();
+  let x1 = 0, x2 = 0, v = 0, lastY = scrollY, raf = 0, w1 = 1, w2 = 1;
+  // le larghezze si misurano solo quando cambiano, mai a ogni fotogramma
+  const measure = () => { w1 = t1.scrollWidth / 2 || 1; w2 = t2.scrollWidth / 2 || 1; };
+  measure();
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(t1);
+  onScroll(y => { v = clamp(v + (y - lastY) * .08, -40, 40); lastY = y; });
+  const loop = () => {
+    v *= .92;
+    const s = .5 + Math.abs(v);
+    x1 = (x1 - s) % w1; x2 = (x2 + s) % w2;
+    t1.style.transform = `translate3d(${x1}px,0,0)`;
+    t2.style.transform = `translate3d(${x2 - w2}px,0,0)`;
+    raf = requestAnimationFrame(loop);
+  };
+  // il nastro gira solo quando è sullo schermo e la scheda è in primo piano
+  let vis = false;
+  const sync = () => {
+    const go = vis && !document.hidden;
+    if (go && !raf) raf = requestAnimationFrame(loop);
+    if (!go && raf) { cancelAnimationFrame(raf); raf = 0; }
+  };
+  new IntersectionObserver(([e]) => { vis = e.isIntersecting; sync(); }).observe($('.belt'));
+  document.addEventListener('visibilitychange', sync);
 }
 
 /* =========================================================
@@ -211,6 +231,18 @@ function minimap() {
   svgEl('circle', { cx: bx, cy: by, r: 4.5, fill: '#E40311', stroke: '#fff', 'stroke-width': 1.5 }, s);
   const t = svgEl('text', { x: bx + 9, y: by - 6, 'font-size': 12, fill: '#0E1C2B', 'font-family': 'Manrope', 'font-weight': 800, 'paint-order': 'stroke', stroke: '#fff', 'stroke-width': 3 }, s);
   t.textContent = 'IDAL · Benevento';
+  pauseOffscreen(s, box);
+}
+
+/* Le animazioni SVG (SMIL) ridisegnano tutta la mappa: si fermano quando non si vede */
+function pauseOffscreen(svg, watch, extra = () => true) {
+  if (!svg.pauseAnimations) return;
+  svg.pauseAnimations();
+  let vis = false;
+  const sync = () => (vis && extra() && !document.hidden ? svg.unpauseAnimations() : svg.pauseAnimations());
+  new IntersectionObserver(([e]) => { vis = e.isIntersecting; sync(); }).observe(watch);
+  document.addEventListener('visibilitychange', sync);
+  return sync;
 }
 
 function storyMap() {
@@ -258,7 +290,7 @@ function storyMap() {
   if (!RM) svgEl('animateTransform', { attributeName: 'transform', type: 'rotate', from: `0 ${bx} ${by}`, to: `360 ${bx} ${by}`, dur: '40s', repeatCount: 'indefinite' }, gSpin);
   const logo = svgEl('g', { class: 'orbit' }, svg);
   svgEl('circle', { cx: bx, cy: by, r: 58, fill: '#fff', stroke: '#009FE3', 'stroke-width': 2 }, logo);
-  svgEl('image', { href: 'assets/img/logo-idal.png', x: bx - 46, y: by - 22, width: 92, height: 43 }, logo);
+  svgEl('image', { href: 'assets/img/logo-idal-sm.webp', x: bx - 46, y: by - 22, width: 92, height: 43 }, logo);
 
   // etichette dei singoli step
   const g0 = svgEl('g', { class: 'lbl lbl-0' }, svg);
@@ -309,10 +341,13 @@ function storyMap() {
     target = VIEWS[n];
     svg.setAttribute('class', 'smap s' + n);
     box.className = 'mapbox s' + n;
-    badge.innerHTML = BADGES[n].map((b, i) => `<span style="animation-delay:${i * .08}s">${b}</span>`).join('');
+    badge.innerHTML = BADGES[n].map(b => `<span>${esc(b)}</span>`).join('');
     $$('.step').forEach(s => s.classList.toggle('is-on', +s.dataset.step === n));
     if (RM) { cur = target.slice(); apply(); } else if (!raf) raf = requestAnimationFrame(loop);
+    syncAnim && syncAnim();
   };
+  // l'orbita dei comparti gira solo nello step 3 e solo se la mappa è sullo schermo
+  const syncAnim = pauseOffscreen(svg, box, () => step === 3);
   apply(); go(0);
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) go(+e.target.dataset.step); }), { rootMargin: '-45% 0px -45% 0px' });
   $$('.step').forEach(s => io.observe(s));
@@ -370,7 +405,7 @@ function numbers() {
 function philo() {
   const el = $('#philoBig'); if (!el) return;
   const HL = /^(qualità|materie|prime|standard|igienici|autentici|genuini|consumatore)/i;
-  el.innerHTML = el.textContent.trim().split(/\s+/).map(w => `<span class="w${HL.test(w) ? ' hl' : ''}">${w}</span>`).join(' ');
+  el.innerHTML = el.textContent.trim().split(/\s+/).map(w => `<span class="w${HL.test(w) ? ' hl' : ''}">${esc(w)}</span>`).join(' ');
   const ws = $$('.w', el);
   if (RM) { ws.forEach(w => w.classList.add('on')); return; }
   let on = -1;
@@ -381,7 +416,7 @@ function philo() {
     if (n === on) return; on = n;
     ws.forEach((w, i) => w.classList.toggle('on', i < n));
   };
-  addEventListener('scroll', upd, { passive: true }); upd();
+  onScroll(upd);
 }
 
 /* =========================================================
@@ -391,39 +426,45 @@ function lines() {
   const track = $('#linesTrack'), pin = $('#linesPin'), dots = $('#linesDots');
   track.innerHTML = LINEE.map((l, i) => {
     const subs = [...new Set(PRODOTTI.filter(p => p.k === l.k).map(p => p.s))];
-    return `<article class="panel" style="--c:${l.c};--fg:${l.dark ? '#0E1C2B' : '#fff'}" id="linea-${l.k}">
-      <img class="panel__bgico" src="${ico(l.ico)}" alt="" style="${l.dark ? 'filter:invert(1)' : ''}">
+    const inv = l.dark ? ' inv' : '';
+    return `<article class="panel k-${l.k}${l.dark ? ' is-dark' : ''}" id="linea-${l.k}">
+      <img class="panel__bgico${inv}" src="${ico(l.ico)}" alt="" loading="lazy">
       <div class="panel__txt">
         <span class="panel__num">0${i + 1} / 0${LINEE.length} <b>${count(l.k)} referenze</b></span>
-        <h3><img src="${ico(l.ico)}" alt="" style="${l.dark ? 'filter:invert(1)' : ''}">${l.nome}</h3>
-        <p>${l.testo}</p>
-        <div class="panel__subs">${subs.map(s => `<span>${s}</span>`).join('')}</div>
+        <h3><img class="${inv}" src="${ico(l.ico)}" alt="" loading="lazy">${esc(l.nome)}</h3>
+        <p>${esc(l.testo)}</p>
+        <div class="panel__subs">${subs.map(s => `<span>${esc(s)}</span>`).join('')}</div>
         <a class="btn" href="#catalogo" data-cat="${l.k}"><span>Vedi le ${count(l.k)} referenze</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
-      <div class="panel__fan">${l.fan.map(c => `<figure><img src="${img(c)}" alt="${BY_CODE[c]?.n || ''}" loading="lazy"></figure>`).join('')}</div>
+      <div class="panel__fan">${l.fan.filter(c => BY_CODE[c]).map(c => `<figure><img src="${imgS(c)}" alt="${esc(BY_CODE[c].n)}" width="280" height="280" loading="lazy" decoding="async"></figure>`).join('')}</div>
     </article>`;
   }).join('');
-  dots.innerHTML = LINEE.map((l, i) => `<button type="button" aria-label="${l.nome}" data-i="${i}"></button>`).join('');
+  dots.innerHTML = LINEE.map((l, i) => `<button type="button" aria-label="${esc(l.nome)}" data-i="${i}"></button>`).join('');
   pin.style.setProperty('--n', LINEE.length * .8 + .6);
   const mq = matchMedia('(min-width: 901px)');
-  let maxX = 0;
-  const measure = () => { maxX = Math.max(0, track.scrollWidth - innerWidth); };
+  let maxX = 0, top = 0, total = 1, lastIdx = -1;
+  const btns = () => $$('button', dots);
+  // misure lette solo al ridimensionamento: durante lo scroll si fa solo matematica
+  const measure = () => {
+    maxX = Math.max(0, track.scrollWidth - innerWidth);
+    top = pin.getBoundingClientRect().top + scrollY;
+    total = Math.max(1, pin.offsetHeight - innerHeight);
+  };
   const upd = () => {
     if (!mq.matches) return;
-    const r = pin.getBoundingClientRect(), total = pin.offsetHeight - innerHeight;
-    const p = clamp(-r.top / total, 0, 1);
+    const p = clamp((scrollY - top) / total, 0, 1);
     track.style.transform = `translate3d(${-p * maxX}px,0,0)`;
     const idx = Math.round(p * (LINEE.length - 1));
-    $$('button', dots).forEach((b, i) => b.classList.toggle('is-on', i === idx));
+    if (idx !== lastIdx) { lastIdx = idx; btns().forEach((b, i) => b.classList.toggle('is-on', i === idx)); }
   };
   dots.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    const total = pin.offsetHeight - innerHeight;
-    scrollTo({ top: pin.offsetTop + total * (+b.dataset.i / (LINEE.length - 1)), behavior: RM ? 'auto' : 'smooth' });
+    measure();
+    scrollTo({ top: top + total * (+b.dataset.i / (LINEE.length - 1)), behavior: RM ? 'auto' : 'smooth' });
   });
-  addEventListener('scroll', upd, { passive: true });
-  addEventListener('resize', () => { measure(); upd(); });
-  measure(); upd();
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { measure(); upd(); }, 100); });
+  if ('ResizeObserver' in window) new ResizeObserver(() => { measure(); upd(); }).observe(document.body);
+  measure(); onScroll(upd);
   addEventListener('load', () => { measure(); upd(); });
 }
 
@@ -431,24 +472,27 @@ function lines() {
    CATALOGO
    ========================================================= */
 const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// la lista salvata nel browser può essere vecchia o manomessa: si tengono solo codici esistenti
+const cleanList = v => Array.isArray(v) ? [...new Set(v.filter(c => typeof c === 'string' && BY_CODE[c]))].slice(0, 400) : [];
 const PAGE = 30;
-const state = { cat: 'tutti', sub: '', q: '', list: store.get('idal-lista', []), view: [], shown: PAGE };
+const state = { cat: 'tutti', sub: '', q: '', list: cleanList(store.get('idal-lista', [])), view: [], shown: PAGE, shownFrom: 0 };
 
 function catalog() {
   const grid = $('#catGrid'), chips = $('#catChips'), subs = $('#subChips'), search = $('#catSearch');
   chips.innerHTML = `<button class="chip" type="button" data-c="tutti" aria-pressed="true"><i><img src="assets/img/favicon.svg" alt=""></i>Tutti <em>${PRODOTTI.length}</em></button>` +
-    LINEE.map(l => `<button class="chip${l.dark ? ' is-dark' : ''}" type="button" data-c="${l.k}" aria-pressed="false" style="--c:${l.c}"><i><img src="${ico(l.ico)}" alt="" style="${l.dark ? 'filter:invert(1)' : ''}"></i>${l.nome} <em>${count(l.k)}</em></button>`).join('');
+    LINEE.map(l => `<button class="chip k-${l.k}${l.dark ? ' is-dark' : ''}" type="button" data-c="${l.k}" aria-pressed="false"><i><img class="${l.dark ? 'inv' : ''}" src="${ico(l.ico)}" alt=""></i>${esc(l.nome)} <em>${count(l.k)}</em></button>`).join('');
 
+  // normalizzazione carattere per carattere: gli indici restano allineati al testo originale
+  const normEach = t => [...t].map(ch => norm(ch).charAt(0) || ch).join('');
   const hl = (txt, q) => {
     const t = esc(txt); if (!q) return t;
-    const i = norm(txt).indexOf(q); if (i < 0) return t;
+    const i = normEach(txt).indexOf(q); if (i < 0) return t;
     return esc(txt.slice(0, i)) + '<mark>' + esc(txt.slice(i, i + q.length)) + '</mark>' + esc(txt.slice(i + q.length));
   };
 
   const more = $('#catMore'), moreBtn = $('#catMoreBtn');
   const render = (keep = false) => {
-    const q = norm(state.q.trim());
+    const q = norm(state.q.trim().slice(0, 60));
     const from = keep ? state.shownFrom : 0;
     if (!keep) state.shown = PAGE;
     state.view = PRODOTTI.filter(p =>
@@ -457,25 +501,26 @@ function catalog() {
       (!q || norm(`${p.c} ${p.n} ${p.s} ${LINEA[p.k].nome} ${p.f}`).includes(q)));
     $('#catCount').textContent = state.view.length;
     $('#catEmpty').hidden = state.view.length > 0;
-    const html = state.view.slice(from, state.shown).map((p, j) => {
-      const i = j;
+    const html = state.view.slice(from, state.shown).map(p => {
       const l = LINEA[p.k], inList = state.list.includes(p.c);
       const pic = p.x
-        ? `<span class="card__ph" style="--c:${l.c}"><img src="${ico(l.ico)}" alt=""></span>`
-        : `<img src="${img(p.c)}" alt="" loading="lazy" decoding="async">`;
-      return `<article class="card" style="--c:${l.c};--i:${Math.min(i, 24)}">
-        <button class="card__img" type="button" data-open="${p.c}" data-cursor="Apri" aria-label="Scheda di ${esc(p.n)}">${pic}</button>
+        ? `<span class="card__ph"><img src="${ico(l.ico)}" alt=""></span>`
+        : `<img src="${imgS(p.c)}" srcset="${imgS(p.c)} 280w, ${img(p.c)} 420w" sizes="(max-width: 560px) 46vw, 210px" alt="" width="280" height="280" loading="lazy" decoding="async">`;
+      return `<article class="card k-${p.k}">
+        <button class="card__img" type="button" data-open="${esc(p.c)}" data-cursor="Apri" aria-label="Scheda di ${esc(p.n)}">${pic}</button>
         <p class="code">${hl(p.c, q)}</p>
         <h3>${hl(p.n, q)}</h3>
         ${p.f ? `<span class="card__f">${esc(p.f)}</span>` : ''}
         <div class="card__meta"><span class="tag">${esc(p.s)}</span>
-        <button class="add${inList ? ' is-in' : ''}" type="button" data-add="${p.c}" aria-pressed="${inList}" aria-label="${inList ? 'Togli dalla lista' : 'Aggiungi alla lista'}: ${esc(p.n)}">${inList ? '✓' : '+'}</button></div>
+        <button class="add${inList ? ' is-in' : ''}" type="button" data-add="${esc(p.c)}" aria-pressed="${inList}" aria-label="${inList ? 'Togli dalla lista' : 'Aggiungi alla lista'}: ${esc(p.n)}">${inList ? '✓' : '+'}</button></div>
       </article>`;
     }).join('');
     if (keep) grid.insertAdjacentHTML('beforeend', html); else grid.innerHTML = html;
+    // entrata a cascata senza stili inline
+    [...grid.children].slice(from).forEach((c, j) => c.style.setProperty('--i', Math.min(j, 24)));
     const left = state.view.length - state.shown;
     more.hidden = left <= 0;
-    moreBtn.firstElementChild.textContent = `Mostra altre ${Math.min(left, PAGE)} referenze (${left} in tutto)`;
+    if (left > 0) moreBtn.firstElementChild.textContent = `Mostra altre ${Math.min(left, PAGE)} referenze (${left} in tutto)`;
   };
   moreBtn.addEventListener('click', () => { state.shownFrom = state.shown; state.shown += PAGE; render(true); });
 
@@ -522,41 +567,50 @@ function catalog() {
 function modal() {
   const dlg = $('#modal'); let idx = -1, list = [];
   const show = code => {
+    if (!BY_CODE[code]) return;
     list = state.view.some(p => p.c === code) ? state.view : PRODOTTI;
     idx = list.findIndex(p => p.c === code);
     fill();
-    if (!dlg.open) { dlg.showModal(); document.body.classList.add('is-locked'); }
+    if (!dlg.open) {
+      // browser vecchi senza <dialog>: la scheda si apre comunque
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+      document.body.classList.add('is-locked');
+    }
   };
   const fill = () => {
     const p = list[idx], l = LINEA[p.k];
-    dlg.style.setProperty('--c', l.c);
+    dlg.className = 'modal k-' + p.k;
     const im = $('#mImg');
-    if (p.x) { im.src = ico(l.ico); im.style.cssText = `background:${l.c};border-radius:50%;padding:20%;width:60%;mix-blend-mode:normal`; }
-    else { im.src = img(p.c); im.style.cssText = ''; }
+    im.classList.toggle('ph', !!p.x);
+    im.src = p.x ? ico(l.ico) : img(p.c);
     im.alt = p.n;
     const line = $('#mLine');
     line.className = 'modal__line' + (l.dark ? ' is-dark' : '');
-    line.innerHTML = `<img src="${ico(l.ico)}" alt="" style="${l.dark ? 'filter:invert(1)' : ''}">${l.nome}`;
+    line.innerHTML = `<img class="${l.dark ? 'inv' : ''}" src="${ico(l.ico)}" alt="">${esc(l.nome)}`;
     $('#mCode').textContent = p.c;
     $('#mName').textContent = p.n;
     const rows = [['Linea', l.nome], ['Tipologia', p.s], p.f && ['Formato', p.f], p.o && ['Origine', p.o], ['Codice', p.c]].filter(Boolean);
-    $('#mData').innerHTML = rows.map(([a, b]) => `<div><dt>${a}</dt><dd>${esc(b)}</dd></div>`).join('');
+    $('#mData').innerHTML = rows.map(([a, b]) => `<div><dt>${esc(a)}</dt><dd>${esc(b)}</dd></div>`).join('');
     const inL = state.list.includes(p.c);
     $('#mAdd span').textContent = inL ? 'Nella tua lista ✓' : 'Aggiungi alla lista';
     $('#mAdd').dataset.add = p.c;
   };
-  const close = () => { dlg.close(); };
+  const close = () => {
+    if (typeof dlg.close === 'function') dlg.close();
+    else { dlg.removeAttribute('open'); document.body.classList.remove('is-locked'); }
+  };
   dlg.addEventListener('close', () => document.body.classList.remove('is-locked'));
   $('#mClose').addEventListener('click', close);
   dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
   $('#mPrev').addEventListener('click', () => { idx = (idx - 1 + list.length) % list.length; fill(); });
   $('#mNext').addEventListener('click', () => { idx = (idx + 1) % list.length; fill(); });
   dlg.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && typeof dlg.showModal !== 'function') close();
     if (e.key === 'ArrowLeft') $('#mPrev').click();
     if (e.key === 'ArrowRight') $('#mNext').click();
   });
   document.addEventListener('click', e => {
-    const o = e.target.closest('[data-open]'); if (!o) return;
+    const o = e.target instanceof Element && e.target.closest('[data-open]'); if (!o) return;
     e.preventDefault(); show(o.dataset.open);
   });
   modal.refresh = () => { if (dlg.open) fill(); };
@@ -567,13 +621,13 @@ function lista() {
   const fab = $('#listFab'), dr = $('#listDrawer'), ul = $('#listItems');
   const save = () => store.set('idal-lista', state.list);
   const body = () => 'Buongiorno,\nvorrei ricevere informazioni sulle seguenti referenze a marchio IDAL:\n\n' +
-    state.list.map(c => { const p = BY_CODE[c]; return `• ${c} — ${p.n}${p.f ? ' (' + p.f + ')' : ''}`; }).join('\n') + '\n\nGrazie.';
+    state.list.filter(c => BY_CODE[c]).map(c => { const p = BY_CODE[c]; return `• ${c} — ${p.n}${p.f ? ' (' + p.f + ')' : ''}`; }).join('\n') + '\n\nGrazie.';
   const paint = () => {
     $('#listCount').textContent = state.list.length;
     fab.classList.toggle('is-on', state.list.length > 0 || dr.classList.contains('is-open'));
     ul.innerHTML = state.list.length ? state.list.map(c => {
       const p = BY_CODE[c]; if (!p) return '';
-      return `<li><img src="${p.x ? ico(LINEA[p.k].ico) : img(c)}" alt="" style="${p.x ? `background:${LINEA[p.k].c}` : ''}"><div><small>${c}</small><b>${esc(p.n)}</b></div><button type="button" data-del="${c}" aria-label="Togli ${esc(p.n)}">×</button></li>`;
+      return `<li class="k-${p.k}"><img class="${p.x ? 'ph' : ''}" src="${p.x ? ico(LINEA[p.k].ico) : imgS(c)}" alt="" width="56" height="56"><div><small>${esc(c)}</small><b>${esc(p.n)}</b></div><button type="button" data-del="${esc(c)}" aria-label="Togli ${esc(p.n)}">×</button></li>`;
     }).join('') : '<li class="is-empty">La lista è vuota. Tocca “+” su una referenza per aggiungerla.</li>';
     $('#listMail').href = 'mailto:idalsrl@idal-srl.it?subject=' + encodeURIComponent('Richiesta informazioni referenze IDAL') + '&body=' + encodeURIComponent(body());
     // sincronizza i bottoni visibili
@@ -586,6 +640,7 @@ function lista() {
     modal.refresh && modal.refresh();
   };
   const toggleItem = c => {
+    if (!BY_CODE[c]) return;
     const i = state.list.indexOf(c);
     if (i >= 0) { state.list.splice(i, 1); toast('Tolto dalla lista'); }
     else { state.list.push(c); toast(`${BY_CODE[c].n} aggiunto alla lista`); fab.classList.remove('bump'); void fab.offsetWidth; fab.classList.add('bump'); }
@@ -600,6 +655,7 @@ function lista() {
     paint();
   };
   document.addEventListener('click', e => {
+    if (!(e.target instanceof Element)) return;
     const a = e.target.closest('[data-add]'); if (a) { e.stopPropagation(); toggleItem(a.dataset.add); return; }
     const d = e.target.closest('[data-del]'); if (d) toggleItem(d.dataset.del);
   });
@@ -607,9 +663,10 @@ function lista() {
   $('#listClose').addEventListener('click', () => open(false));
   addEventListener('keydown', e => { if (e.key === 'Escape' && dr.classList.contains('is-open')) open(false); });
   $('#listCopy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(body()); toast('Elenco copiato'); } catch { toast('Copia non riuscita'); }
+    try { await navigator.clipboard.writeText(body()); toast('Elenco copiato'); } catch { toast('Copia non riuscita: usa “Richiedi informazioni”'); }
   });
   $('#listClear').addEventListener('click', () => { state.list = []; save(); paint(); });
+  addEventListener('storage', e => { if (e.key === 'idal-lista') { state.list = cleanList(store.get('idal-lista', [])); paint(); } });
   paint();
 }
 
@@ -628,21 +685,38 @@ function reveals() {
 
 function progress() {
   const bar = $('#progress');
-  const upd = () => { bar.style.transform = `scaleX(${scrollY / (document.documentElement.scrollHeight - innerHeight || 1)})`; };
-  addEventListener('scroll', upd, { passive: true }); upd();
+  let max = 1;
+  const measure = () => { max = Math.max(1, document.documentElement.scrollHeight - innerHeight); };
+  measure();
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(document.body);
+  addEventListener('resize', measure);
+  onScroll(y => { bar.style.transform = `scaleX(${clamp(y / max, 0, 1)})`; });
+}
+
+/* Le animazioni continue (CSS) si fermano nelle sezioni fuori schermo */
+function pauseSections() {
+  const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('is-off', !e.isIntersecting)), { rootMargin: '100px 0px' });
+  $$('main > section, .foot').forEach(s => io.observe(s));
 }
 
 function cursor() {
   if (!FINE || RM) return;
   const c = $('#cursor'), dot = c.firstElementChild;
   let x = -100, y = -100, cx = x, cy = y;
-  addEventListener('pointermove', e => { x = e.clientX; y = e.clientY; }, { passive: true });
+  let raf = 0;
+  // il pallino si muove solo mentre si muove il mouse
+  const loop = () => {
+    cx += (x - cx) * .2; cy += (y - cy) * .2;
+    c.style.transform = `translate3d(${cx}px,${cy}px,0)`;
+    raf = Math.abs(x - cx) + Math.abs(y - cy) > .3 ? requestAnimationFrame(loop) : 0;
+  };
+  addEventListener('pointermove', e => { x = e.clientX; y = e.clientY; if (!raf) raf = requestAnimationFrame(loop); }, { passive: true });
   document.addEventListener('pointerover', e => {
+    if (!(e.target instanceof Element)) return;
     const t = e.target.closest('[data-cursor]');
     c.classList.toggle('is-big', !!t); dot.textContent = t ? t.dataset.cursor : '';
     c.classList.toggle('is-hide', !t && !!e.target.closest('a,button,input,textarea,label'));
   });
-  (function loop() { cx += (x - cx) * .2; cy += (y - cy) * .2; c.style.transform = `translate3d(${cx}px,${cy}px,0)`; requestAnimationFrame(loop); })();
 }
 
 function magnetic() {
@@ -674,7 +748,14 @@ function contact() {
     toast('Si apre la tua posta. Grazie!');
   });
   $('#gmapLoad').addEventListener('click', () => {
-    $('#gmap').innerHTML = '<iframe title="Mappa: IDAL, Via Antonio Abete 40, Benevento" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Via+Antonio+Abete+40,+82100+Benevento&output=embed"></iframe>';
+    // la mappa di Google si carica solo se richiesta, in un iframe isolato
+    const f = document.createElement('iframe');
+    f.title = 'Mappa: IDAL, Via Antonio Abete 40, Benevento';
+    f.loading = 'lazy';
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+    f.src = 'https://www.google.com/maps?q=Via+Antonio+Abete+40,+82100+Benevento&output=embed';
+    $('#gmap').replaceChildren(f);
   });
   $('#year').textContent = new Date().getFullYear();
 }
@@ -722,7 +803,8 @@ function rain() {
   // scrivi "idal" sulla tastiera
   let buf = '';
   addEventListener('keydown', e => {
-    if (e.target.closest('input,textarea')) return;
+    if (typeof e.key !== 'string' || e.key.length !== 1) return;
+    if (e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable]')) return;
     buf = (buf + e.key.toLowerCase()).slice(-4);
     if (buf === 'idal') go();
   });
@@ -734,23 +816,9 @@ function rain() {
 /* =========================================================
    AVVIO
    ========================================================= */
-loader();
-nav();
-keys();
-belt();
-hero();
-minimap();
-storyMap();
-numbers();
-philo();
-lines();
-catalog();
-modal();
-lista();
-reveals();
-progress();
-cursor();
-magnetic();
-contact();
-rain();
+// ogni parte parte da sola: se una si rompe, le altre funzionano lo stesso
+const safe = fn => { try { fn(); } catch (e) { console.error('[IDAL]', fn.name, e); } };
+try { loader(); } catch (e) { document.body.classList.remove('is-loading'); console.error('[IDAL] loader', e); }
+[nav, keys, belt, hero, minimap, storyMap, numbers, philo, lines, catalog, modal, lista,
+ reveals, progress, pauseSections, cursor, magnetic, contact, rain].forEach(safe);
 })();
