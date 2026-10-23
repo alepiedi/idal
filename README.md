@@ -61,7 +61,34 @@ Per rigenerare tutto da un nuovo PDF del catalogo, gli script in `tools/` vanno 
 
 ## Pubblicare
 
-È un sito statico: basta GitHub Pages (Settings → Pages → branch e cartella `/`) o qualsiasi hosting statico.
+Ambiente di prova: **https://idal.alessandropiedimonte.dev** (GitHub Pages dietro Cloudflare), con `noindex` nelle pagine e nell'intestazione `X-Robots-Tag`. Quando il sito andrà sul dominio di IDAL: cambiare il file `CNAME` e togliere il `<meta name="robots">` da `index.html`.
+
+### 1. DNS su Cloudflare
+- Record **CNAME** `idal` → `alepiedi.github.io`, all'inizio **solo DNS** (nuvola grigia).
+- Su GitHub, Settings → Pages: dominio `idal.alessandropiedimonte.dev`, attendere il certificato, poi spuntare **Enforce HTTPS**.
+- Tornare su Cloudflare e attivare il **proxy** (nuvola arancione).
+- Rules → **Configuration Rules** → nuova regola con `Hostname` uguale a `idal.alessandropiedimonte.dev` → **SSL: Full (strict)**. Va fatto con una regola e non nell'impostazione generale SSL/TLS, che vale per tutto il dominio e potrebbe toccare gli altri siti. Il passaggio a HTTPS è già garantito: tutti i domini `.dev` sono solo HTTPS nei browser.
+
+### 2. Intestazioni di sicurezza
+Cloudflare → Rules → **Transform Rules** → *Modify Response Header* → nuova regola:
+- Se: `Hostname` uguale a `idal.alessandropiedimonte.dev`
+- Poi, **Set static** per ognuna:
+
+| Intestazione | Valore |
+|---|---|
+| `Strict-Transport-Security` | `max-age=31536000` |
+| `Content-Security-Policy` | `default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src https://www.google.com; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; upgrade-insecure-requests; frame-ancestors 'none'` |
+| `X-Frame-Options` | `DENY` |
+| `X-Content-Type-Options` | `nosniff` |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()` |
+| `Cross-Origin-Opener-Policy` | `same-origin` |
+| `X-Robots-Tag` | `noindex, nofollow` |
+
+La CSP nell'intestazione è la stessa del `<meta>` in `index.html` più `frame-ancestors 'none'` (che nel `<meta>` non funziona): se si cambia una, cambiare anche l'altra.
+
+### 3. Cache (facoltativo)
+Rules → **Cache Rules**: per `URI Path` che inizia con `/assets/fonts/` o `/assets/img/`, *Browser TTL* 7 giorni. CSS e JS restano come sono: si aggiornano con il `?v=` in `index.html`.
 
 ---
 
