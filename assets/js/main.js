@@ -704,6 +704,7 @@ function cursor() {
   const c = $('#cursor'), dot = c.firstElementChild;
   let x = -100, y = -100, cx = x, cy = y;
   let raf = 0;
+  c.style.transform = 'translate3d(-100px,-100px,0)';
   // il pallino si muove solo mentre si muove il mouse
   const loop = () => {
     cx += (x - cx) * .2; cy += (y - cy) * .2;
